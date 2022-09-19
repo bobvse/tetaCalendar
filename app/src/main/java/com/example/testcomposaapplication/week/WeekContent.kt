@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.testcomposaapplication.day.DayState
-import io.github.boguszpawlowski.composecalendar.selection.SelectionState
+import com.example.testcomposaapplication.selection.SelectionState
 
 @Composable
 internal fun <T : SelectionState> WeekContent(

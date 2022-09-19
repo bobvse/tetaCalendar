@@ -1,5 +1,7 @@
 package com.example.testcomposaapplication.week
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.testcomposaapplication.day.WeekDay
 import io.github.boguszpawlowski.composecalendar.util.daysUntil
 import java.time.DayOfWeek
@@ -8,6 +10,7 @@ import java.time.YearMonth
 
 private const val DaysInAWeek = 7
 
+@RequiresApi(Build.VERSION_CODES.O)
 internal fun YearMonth.getWeeks(
   includeAdjacentMonths: Boolean,
   firstDayOfTheWeek: DayOfWeek,
