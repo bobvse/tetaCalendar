@@ -11,9 +11,9 @@ import androidx.compose.runtime.setValue
 import java.time.LocalDate
 
 @Stable
-public interface SelectionState {
-    public fun isDateSelected(date: LocalDate): Boolean = false
-    public fun onDateSelected(date: LocalDate) {}
+interface SelectionState {
+    fun isDateSelected(date: LocalDate): Boolean = false
+    fun onDateSelected(date: LocalDate) {}
 }
 
 /**

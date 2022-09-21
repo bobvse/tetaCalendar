@@ -58,13 +58,13 @@ fun SelectableCalendar(
         dayContent = dayContent,
         monthHeader = monthHeader,
         weekHeader = weekHeader,
-        monthContainer = monthContainer
+        monthContainer = monthContainer,
     )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-public fun <T : SelectionState> Calendar(
+fun <T : SelectionState> Calendar(
     calendarState: CalendarState<T>,
     modifier: Modifier = Modifier,
     firstDayOfWeek: DayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek,

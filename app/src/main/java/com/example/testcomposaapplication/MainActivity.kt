@@ -5,30 +5,26 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.testcomposaapplication.data.Plan
+import com.example.testcomposaapplication.day.DefaultDay
 import com.example.testcomposaapplication.ui.theme.DesignSystemTheme
-import java.util.*
 
 class MainActivity : ComponentActivity() {
 
@@ -42,9 +38,6 @@ class MainActivity : ComponentActivity() {
             DesignSystemTheme(isOn) {
                 Surface(color = DesignSystemTheme.colors.backgroundPrimary) {
                     renderApplication()
-
-                    //TODO demo
-                    //LazyColumnDemo()
                 }
             }
         }
@@ -55,133 +48,97 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun renderApplication() {
         // Compose version of context
-        val context = LocalContext.current
+        val appState: MutableState<AppState> =
+            remember { mutableStateOf(AppState.Feature1("Calendar")) }
 
-        // Your App state (or it may be App State)
-        val appState: MutableState<AppState> = remember { mutableStateOf(AppState.Empty) }
-        appState.value = AppState.Feature1("Calendar")
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .background(DesignSystemTheme.colors.backgroundPrimary),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            Button(onClick = {
-//                appState.value = listOf(
-//                    AppState.Empty,
-//                    AppState.Feature1("test1"),
-//                    AppState.Feature2("test2", R.drawable.ic_launcher_background)
-//                ).random()
-//            }) {
-//                Text(
-//                    text = "Change State",
-//                    fontSize = 22.sp,
-//                    modifier = Modifier
-//                        .background(DesignSystemTheme.colors.accentActive)
-//                        .padding(10.dp)
-//                )
-//            }
-
-            when (appState.value) {
-                is AppState.Empty -> {
+        when (appState.value) {
+            is AppState.Empty -> {
+                Text(
+                    text = "Nothing",
+                    color = Color.White,
+                    fontSize = 22.sp,
+                    modifier = Modifier
+                        .background(DesignSystemTheme.colors.brandMtsRed)
+                        .padding(10.dp)
+                )
+            }
+            is AppState.Feature1 -> {
+                Column(
+                    Modifier.verticalScroll(rememberScrollState())
+                ) {
+                    SelectableCalendar(dayContent = {
+                        DefaultDay(it) {
+                            appState.value = AppState.Feature2(it.toString())
+                        }
+                    })
+                }
+            }
+            is AppState.Feature2 -> {
+                val feature2 = appState.value as AppState.Feature2
+                ConstraintLayout {
+                    val (text, PlansList, Button) = createRefs()
                     Text(
-                        text = "Nothing",
-                        color = Color.White,
-                        fontSize = 22.sp,
-                        modifier = Modifier
+                        feature2.text, fontSize = 25.sp, modifier = Modifier
                             .background(DesignSystemTheme.colors.brandMtsRed)
                             .padding(10.dp)
+                            .constrainAs(text) {
+
+                            }
                     )
-                }
-                is AppState.Feature1 -> {
-                    val feature1 = appState.value as AppState.Feature1
-                    Column(
-                        Modifier.verticalScroll(rememberScrollState())
-                    ) {
-                        SelectableCalendar()
-                    }
-                }
-                is AppState.Feature2 -> {
-                    val feature2 = appState.value as AppState.Feature2
-                    Text(
-                        text = "Feature2 " + feature2.text,
-                        fontSize = 30.sp,
-                        modifier = Modifier
-                            .background(DesignSystemTheme.colors.accentActive)
+                    val plans = listOf(
+                        Plan("Покормить кота", "Дать дримисов"),
+                        Plan("Поесть самому", "Без дримисов")
+                    )
+                    PlansList(plans = plans,
+                        Modifier
                             .padding(10.dp)
-                    )
-                    Image(
-                        painter = painterResource(feature2.drawableRes),
-                        contentDescription = ""
-                    )
+                            .constrainAs(PlansList) {
+                                top.linkTo(text.bottom, margin = 16.dp)
+                            })
+
+                    Button(
+                        modifier = Modifier
+                            .constrainAs(Button) {
+                                top.linkTo(PlansList.bottom, margin = 16.dp)
+                            }
+                            .background(Color.White)
+                            .padding(10.dp),
+                        onClick = {
+                            appState.value = AppState.Feature1(
+                                "test1"
+                            )
+                        },
+
+                        ) {
+                        Text("Назад", fontSize = 25.sp, color = Color.Black)
+                    }
                 }
             }
         }
     }
 
+    @Composable
+    fun PlansList(plans: List<Plan>, mad: Modifier) {
+        LazyColumn(modifier = mad) {
+            items(plans) { message ->
+                Text(
+                    text = message.title,
+                    color = Color.Black,
+                    fontSize = 22.sp,
+                    modifier = Modifier
+                        .background(DesignSystemTheme.colors.brandMtsRed)
+                        .padding(10.dp)
+                )
 
-@Composable
-fun Greeting() {
-
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val color = if (isPressed) Color.Blue else Color.Green
-
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Button(
-            onClick = {},
-            interactionSource = interactionSource,
-            colors = ButtonDefaults.buttonColors(backgroundColor = color),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text(
-                text = "Button",
-                color = Color.White,
-                style = DesignSystemTheme.typography.p2.medium
-            )
+                Text(
+                    text = message.desc,
+                    color = Color.Black,
+                    fontSize = 22.sp,
+                    modifier = Modifier
+                        .background(DesignSystemTheme.colors.brandMtsRed)
+                        .padding(10.dp)
+                )
+            }
         }
-    }
-}
-
-fun initState(): MyCalendarState {
-    val calendar = Calendar.getInstance()
-    val monthNum = calendar.get(Calendar.MONTH)
-    val daysCount = calendar.getActualMaximum(Calendar.DATE)
-    return MyCalendarState(
-        year = calendar.get(Calendar.YEAR),
-        month = monthNum,
-        startDate = null,
-        endDate = null,
-        daysCount = daysCount
-    )
-}
-
-@Composable
-fun LazyColumnDemo() {
-    val list = listOf(
-        "A", "B", "C", "D"
-    ) + ((0..100).map { it.toString() })
-    val lazyListState: LazyListState = rememberLazyListState()
-
-    LazyColumn(state = lazyListState, modifier = Modifier.fillMaxHeight()) {
-        items(items = list, itemContent = { item ->
-            Text(
-                text = item,
-                style = TextStyle(fontSize = 80.sp),
-                modifier = Modifier.clickable {
-                    // Sample lazyListState.firstVisibleItemIndex
-                }
-            )
-        })
     }
 }

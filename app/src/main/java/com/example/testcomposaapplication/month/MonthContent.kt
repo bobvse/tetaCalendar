@@ -4,13 +4,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.example.testcomposaapplication.day.DayState
+import com.example.testcomposaapplication.selection.SelectionState
 import com.example.testcomposaapplication.week.WeekContent
 import com.example.testcomposaapplication.week.getWeeks
-import com.example.testcomposaapplication.header.MonthState
-import com.example.testcomposaapplication.selection.SelectionState
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth

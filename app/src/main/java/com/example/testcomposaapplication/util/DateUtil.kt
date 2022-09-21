@@ -1,13 +1,9 @@
-package io.github.boguszpawlowski.composecalendar.util
+package com.example.testcomposaapplication.util
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-internal fun Collection<LocalDate>.addOrRemoveIfExists(date: LocalDate) =
-  if (contains(date)) {
-    this - date
-  } else {
-    this + date
-  }
-
+@RequiresApi(Build.VERSION_CODES.O)
 internal infix fun DayOfWeek.daysUntil(other: DayOfWeek) = (7 + (value - other.value)) % 7
